@@ -1,0 +1,90 @@
+<head>
+	<link href="/static/style.css" rel="stylesheet">
+	<link rel="icon" href="data:;base64,=">
+</head>
+
+<body>
+
+	<div>
+		<form id="formElem" enctype="multipart/form-data">
+		<div class="divr">
+			<div class="div4">
+				<h5>Введите chat id</h5>
+				<table class="my_table" id="my_table">
+					<tr>
+						<td><input type="text" class="chatid" id="chatid" name="chatid"
+								placeholder="Введите chat id" required></input></td>
+					</tr>
+				</table>
+
+				<input type="button" class="addchatid" id="addchatid" value="+"></input>
+			</div>
+		</div>
+		<div class="divc">
+			
+				<div class="div1">
+					<input type="text" class="rounded-input" id="title" name="title" placeholder="Титул поста">
+				</div>
+				<div class="div2">
+					<textarea name=text class="rounded-input" value="Ваш текст" id="text" rows=20 cols=70
+						placeholder="Текст поста"></textarea>
+				</div>
+				<div class="div1">
+					<input type="file" class="button9" id="attachment" name="attachment">
+				</div>
+				<div class="div5">
+					<input type="submit" id="send" class="gradient-button"></input>
+				</div>
+				<input type="text" id="chatData" hidden>
+			
+		</div>
+	</form>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+	</script>
+	<script>
+		//Создание новых полей для чатов
+		jQuery(function () {
+			jQuery('input.addchatid').click(function (event) {
+				event.preventDefault();
+				var newRow = jQuery('<tr><td><input type="text" class="additionChat" placeholder="Введите chat id"></td></tr>');
+				jQuery('table.my_table').append(newRow);
+
+			});
+		});
+		formElem.onsubmit = async (e) => {
+
+
+			if(!$("#title").val() && !$("#text").val() && !$("#attachment").val()){
+				e.preventDefault();
+				alert("Зачем вам пустой пост?");
+				return false;
+
+			}
+
+			if (!document.getElementById("chatData").value.includes(document.getElementById("chatid").value)) {
+				document.getElementById("chatData").value += document.getElementById("chatid").value;
+			}
+			let chats = document.getElementsByClassName("additionChat");
+			if (chats.length !== 0) {
+				for (let chat of chats) {
+					if (!document.getElementById("chatData").value.includes(chat.value)) {
+						document.getElementById("chatData").value += "," + chat.value;
+					}
+				}
+			}
+
+			let formData = new FormData(formElem);
+			formData.set("chatid", document.getElementById("chatData").value);
+
+			e.preventDefault();
+			let response = await fetch('https://feed.pnit.od.ua/core/uniwebhook', {
+				method: 'POST',
+				body: formData
+			});
+			alert("Пост успешно создан!");
+		};
+
+
+	</script>
+</body>
